@@ -5,10 +5,12 @@ class_name pipespawner
 #emit signals for events 
 signal crash
 signal scored 
+signal game_started
 
 var pipe_scene = preload("res://scenes/pipes.tscn")
 var pipe_speed = -250
-
+var process_input = true
+var started = false
 
 
 
@@ -19,7 +21,8 @@ var pipe_speed = -250
 
 # everytime @onready timer times out, spawn a pipe
 func _ready():
-	spawn_timer.timeout.connect(spawn_pipe)
+	pass
+	
 
 
 
@@ -27,7 +30,14 @@ func _ready():
 
 #start timer when exit idle
 func start_spawning():
-	spawn_timer.start()
+	if Input.is_action_just_pressed("ui_up") and process_input:
+		if !started:
+			spawn_timer.timeout.connect(spawn_pipe)
+			spawn_timer.start()
+			game_started.emit()
+	if !started:
+		return
+	
 
 func spawn_pipe():
 	#pull in pipe scene
